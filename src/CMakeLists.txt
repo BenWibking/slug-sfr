@@ -14,7 +14,7 @@ ExternalProject_Add(project_slug
     URL https://bitbucket.org/krumholz/slug2/get/master.tar.gz
     PREFIX slug2-bitbucket
     CONFIGURE_COMMAND ""
-    BUILD_COMMAND make lib-debug MACHINE=linux-gnu FITS=DISABLE_FITS
+    BUILD_COMMAND make lib MACHINE=linux-gnu FITS=DISABLE_FITS
     BUILD_IN_SOURCE 1
     INSTALL_COMMAND cp <SOURCE_DIR>/src/libslug.so <INSTALL_DIR>/libslug.so
     BUILD_BYPRODUCTS <INSTALL_DIR>/libslug.so
