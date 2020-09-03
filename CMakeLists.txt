@@ -3,17 +3,12 @@ project(SlugSFR VERSION 1.0
   DESCRIPTION "Star formation skeleton code using the SLUG library"
   LANGUAGES CXX)
 
-if (NOT BLT_CXX_STD)
-  set(BLT_CXX_STD "c++11" CACHE STRING "")
-endif()
-
-include(blt/SetupBLT.cmake)
-
-include(CTest)
-
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+
+include(blt/SetupBLT.cmake)
+include(CTest)
 
 add_subdirectory(${SlugSFR_SOURCE_DIR}/src ${SlugSFR_BINARY_DIR}/src)
 
