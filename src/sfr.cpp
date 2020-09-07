@@ -11,16 +11,22 @@ auto main(int argc, char **argv) -> int {
   }
 }
 
-/* Writes a boost::random::mersenne_twister_engine to a @c std::ostream */
+using rng = boost::random::mt19937;
+
+#if 0
+/* Writes a boost::random::mt19937 to a @c std::ostream */
 template <class CharT, class Traits>
-friend std::basic_ostream<CharT, Traits> &
+std::basic_ostream<CharT, Traits> &
 operator<<(std::basic_ostream<CharT, Traits> &os,
-           const boost::random::mersenne_twister_engine &mt)
+           const rng &mt)
 {
-    UIntType data[n];
+    std::size_t n = mt.state_size;
+    std::size_t i = mt.i;
+
+    uint32_t data[n];
     for (std::size_t j = 0; j < i; ++j)
     {
-        data[j + n - i] = x[j];
+        data[j + n - i] = mt.x[j];
     }
     if (i != n)
     {
@@ -30,16 +36,16 @@ operator<<(std::basic_ostream<CharT, Traits> &os,
     for (std::size_t j = 1; j < n; ++j)
     {
         // write in binary format
-        os.write(reinterpret_cast<char*>(&data[j]), sizeof(data[j]);
+        os.write(reinterpret_cast<char*>(&data[j]), sizeof(data[j]));
     }
     return os;
 }
 
-/* Reads a boost::random::mersenne_twister_engine from a @c std::istream */
+/* Reads a boost::random::mt19937 from a @c std::istream */
 template <class CharT, class Traits>
-friend std::basic_istream<CharT, Traits> &
+std::basic_istream<CharT, Traits> &
 operator>>(std::basic_istream<CharT, Traits> &is,
-           boost::random::mersenne_twister_engine &mt)
+           rng &mt)
 {
     for (std::size_t j = 0; j < mt.state_size; ++j)
     {
@@ -50,11 +56,28 @@ operator>>(std::basic_istream<CharT, Traits> &is,
     mt.i = mt.state_size; // this is to work around a compiler bug w/r/t templates
     return is;
 }
-
+#endif
 
 auto test_slug() -> bool {
-  // Serialize RNG
   
+  // Serialize RNG
+  int seed = 47;
+  rng *my_rng = new rng(seed);
+  std::stringstream buffer;
+  buffer << (*my_rng);
+
+  int seq_len = 2;
+  std::vector<uint32_t> random_seq(seq_len);
+  my_rng->generate(random_seq.begin(), random_seq.end());
+  std::cout << random_seq[0] << " " << random_seq[1] << std::endl;
+  delete my_rng;
+
+  rng *my_new_rng = new rng();
+  buffer >> (*my_new_rng);
+  std::vector<uint32_t> new_random_seq(seq_len);
+  my_new_rng->generate(new_random_seq.begin(), new_random_seq.end());
+  std::cout << new_random_seq[0] << " " << new_random_seq[1] << std::endl;
+  delete my_new_rng;
 
   // Slug part
   double particle_mass = 100.0; // solar masses
