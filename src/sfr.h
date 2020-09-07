@@ -1,7 +1,7 @@
 #ifndef SFR_H_
 #define SFR_H_
 
-#include <stdio.h>
+#include <cstdio>
 #include <malloc.h>
 
 #include "slug_object.h"
