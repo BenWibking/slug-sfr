@@ -1,2 +1,2 @@
 # slug-sfr
-a template implementation of star formation routines with SLUG
+a prototype implementation of star formation routines with SLUG
