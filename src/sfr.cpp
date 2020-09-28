@@ -75,12 +75,9 @@ TEST(SlugObjectTest, SerializesDeserializes)
 {
   // Slug part
   double particle_mass = 100.0; // solar masses
+
   slug_object *SlugOb = slug_object_new();
   slug_construct_cluster(SlugOb, particle_mass);
-
-  size_t sizeSlug = slug_buffer_size(SlugOb);
-  auto SlugOb_size = sizeSlug;
-  auto SlugMass = slug_get_stellar_mass(SlugOb); // solar masses
 
   size_t dimBuf = slug_buffer_size(SlugOb);
   char *buf_slug = (char *)malloc(dimBuf);
