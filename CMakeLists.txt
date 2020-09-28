@@ -52,6 +52,10 @@ blt_register_library(NAME slug2
   INCLUDES ${source_dir}/src
   LIBRARIES ${slug_install_dir}/libslug.so)
 
+blt_register_library(NAME pcg
+  TREAT_INCLUDES_AS_SYSTEM OFF
+  INCLUDES ${source_dir}/pcg-cpp/include)
+
 # include source code
 
 add_subdirectory(${SlugSFR_SOURCE_DIR}/src ${SlugSFR_BINARY_DIR}/src)

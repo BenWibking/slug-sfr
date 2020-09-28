@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include "sfr.h"
 
-using rng = boost::random::mt19937;
+using rng = pcg32;
 
 #if 0
 /* Writes a boost::random::mt19937 to a @c std::ostream */
@@ -52,20 +52,48 @@ TEST(RngTest, SerializesDeserializes)
 {
   // Serialize RNG
   int seed = 47;
-  rng *my_rng = new rng(seed);
+  rng my_rng(seed);
   std::stringstream buffer;
-  buffer << (*my_rng);
+  buffer << my_rng;
+  rng my_saved_rng = my_rng;
+  
+#if 0
+  {
+    std::stringstream testbuffer(buffer.str());
+    testbuffer.flags(std::ios_base::dec | std::ios_base::skipws);
+    uint64_t multiplier, increment, state;
+    auto space = std::string();
+    {
+      using pcg_extras::operator>>;
+      testbuffer >> multiplier >> increment >> state;
+    }
+
+    if (!testbuffer.fail())
+    {
+      std::cout << "success " << multiplier << ' ' << increment << ' ' << state << std::endl;
+    }
+    else
+    {
+      std::cout << "failure " << multiplier << ' ' << increment << ' ' << state << std::endl;
+    }
+  }
+#endif
 
   int seq_len = 2;
   std::vector<uint32_t> random_seq(seq_len);
-  my_rng->generate(random_seq.begin(), random_seq.end());
-  delete my_rng;
+  for(size_t i=0; i < random_seq.size(); ++i) {
+    random_seq[i] = my_rng();
+  }
 
-  rng *my_new_rng = new rng();
-  buffer >> (*my_new_rng);
+  rng my_new_rng;
+  buffer >> my_new_rng;
+  ASSERT_FALSE(buffer.fail());
+  ASSERT_EQ(my_saved_rng, my_new_rng);
+
   std::vector<uint32_t> new_random_seq(seq_len);
-  my_new_rng->generate(new_random_seq.begin(), new_random_seq.end());
-  delete my_new_rng;
+  for(size_t i=0; i < new_random_seq.size(); ++i) {
+    new_random_seq[i] = my_new_rng();
+  }
 
   ASSERT_EQ(random_seq[0], new_random_seq[0]);
   ASSERT_EQ(random_seq[1], new_random_seq[1]);
