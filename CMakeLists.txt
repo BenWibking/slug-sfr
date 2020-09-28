@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.18)
 project(SlugSFR VERSION 1.0
   DESCRIPTION "Star formation skeleton code using the SLUG library"
   LANGUAGES CXX)
@@ -38,19 +38,16 @@ ExternalProject_Add(project_slug
     CONFIGURE_COMMAND ""
     BUILD_COMMAND make lib MACHINE=linux-gnu FITS=DISABLE_FITS
     BUILD_IN_SOURCE 1
+    BUILD_BYPRODUCTS <SOURCE_DIR>/src/libslug.so
     INSTALL_COMMAND cp <SOURCE_DIR>/src/libslug.so <INSTALL_DIR>/libslug.so
-    BUILD_BYPRODUCTS <INSTALL_DIR>/libslug.so
 )
-include(ExternalProject)
-ExternalProject_Get_Property(project_slug install_dir)
-get_filename_component(slug_install_dir ${install_dir} ABSOLUTE)
-message(STATUS "SLUG install directory is: ${slug_install_dir}")
 ExternalProject_Get_Property(project_slug source_dir)
-blt_register_library(NAME slug2
+ExternalProject_Get_Property(project_slug install_dir)
+blt_register_library(NAME slug
   TREAT_INCLUDES_AS_SYSTEM OFF
   DEFINES USE_SLUG=1
   INCLUDES ${source_dir}/src
-  LIBRARIES ${slug_install_dir}/libslug.so)
+  LIBRARIES ${install_dir}/libslug.so)
 
 blt_register_library(NAME pcg
   TREAT_INCLUDES_AS_SYSTEM OFF
