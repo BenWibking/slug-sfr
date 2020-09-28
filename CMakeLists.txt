@@ -34,8 +34,7 @@ blt_register_library(NAME boost
 
 include(ExternalProject)
 ExternalProject_Add(project_slug
-    URL https://bitbucket.org/krumholz/slug2/get/master.tar.gz
-    PREFIX slug2-bitbucket
+    SOURCE_DIR ${SlugSFR_SOURCE_DIR}/slug2
     CONFIGURE_COMMAND ""
     BUILD_COMMAND make lib MACHINE=linux-gnu FITS=DISABLE_FITS
     BUILD_IN_SOURCE 1
