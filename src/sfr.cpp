@@ -1,15 +1,5 @@
+#include <gtest/gtest.h>
 #include "sfr.h"
-
-auto main(int argc, char **argv) -> int {
-  // test runner
-  bool result = test_slug();
-
-  if (result == true) {
-    return 0;
-  } else {
-    return 1;
-  }
-}
 
 using rng = boost::random::mt19937;
 
@@ -58,8 +48,8 @@ operator>>(std::basic_istream<CharT, Traits> &is,
 }
 #endif
 
-auto test_slug() -> bool {
-  
+TEST(RngTest, SerializesDeserializes)
+{
   // Serialize RNG
   int seed = 47;
   rng *my_rng = new rng(seed);
@@ -69,16 +59,20 @@ auto test_slug() -> bool {
   int seq_len = 2;
   std::vector<uint32_t> random_seq(seq_len);
   my_rng->generate(random_seq.begin(), random_seq.end());
-  std::cout << random_seq[0] << " " << random_seq[1] << std::endl;
   delete my_rng;
 
   rng *my_new_rng = new rng();
   buffer >> (*my_new_rng);
   std::vector<uint32_t> new_random_seq(seq_len);
   my_new_rng->generate(new_random_seq.begin(), new_random_seq.end());
-  std::cout << new_random_seq[0] << " " << new_random_seq[1] << std::endl;
   delete my_new_rng;
 
+  ASSERT_EQ(random_seq[0], new_random_seq[0]);
+  ASSERT_EQ(random_seq[1], new_random_seq[1]);
+}
+
+TEST(SlugObjectTest, SerializesDeserializes)
+{
   // Slug part
   double particle_mass = 100.0; // solar masses
   slug_object *SlugOb = slug_object_new();
@@ -88,18 +82,27 @@ auto test_slug() -> bool {
   auto SlugOb_size = sizeSlug;
   auto SlugMass = slug_get_stellar_mass(SlugOb); // solar masses
 
-  std::cout << "Expected cluster mass = " << particle_mass << std::endl;
-  std::cout << "Actual star cluster mass = " << SlugMass << std::endl;
-
   size_t dimBuf = slug_buffer_size(SlugOb);
   char *buf_slug = (char *)malloc(dimBuf);
   slug_pack_buffer(SlugOb, buf_slug);
-  slug_object_delete(SlugOb);
 
   slug_object *new_SlugOb = slug_object_new();
   slug_reconstruct_cluster(new_SlugOb, buf_slug);
+  size_t dimBufNew = slug_buffer_size(new_SlugOb);
+  char *buf_slugNew = (char *) malloc(dimBufNew);
+  slug_pack_buffer(new_SlugOb, buf_slugNew);
 
-  std::cout << "Success!" << std::endl;
+  ASSERT_EQ(dimBuf, dimBufNew);
+  for(size_t i=0; i < dimBuf; ++i) {
+    ASSERT_EQ(buf_slug[i], buf_slugNew[i]);
+  }
 
-  return true;
+  delete SlugOb;
+  delete new_SlugOb;
+}
+
+// otherwise the SLUG main() function is used
+int main(int argc, char **argv) {
+  ::testing::InitGoogleTest(&argc, argv);
+  return RUN_ALL_TESTS();
 }
