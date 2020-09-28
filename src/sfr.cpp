@@ -2,6 +2,7 @@
 #include "sfr.h"
 
 using rng = pcg32;
+// serialization/deserialization doesn't work for pcg64 (!!)
 
 #if 0
 /* Writes a boost::random::mt19937 to a @c std::ostream */
