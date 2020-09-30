@@ -3,9 +3,8 @@
 
 TEST(SlugObjectTest, SerializesDeserializes)
 {
-  // Slug part
+  // create slug_cluster object
   double particle_mass = 100.0; // solar masses
-
   slug_object *SlugOb = slug_object_new();
   slug_construct_cluster(SlugOb, particle_mass);
 
@@ -14,8 +13,12 @@ TEST(SlugObjectTest, SerializesDeserializes)
   char *buf_slug = (char *)malloc(dimBuf);
   slug_pack_buffer(SlugOb, buf_slug);
 
+  // TODO: serialize using *new* method
+
+
+  // TODO: deserialize using *new* method
   slug_object *new_SlugOb = slug_object_new();
-  slug_reconstruct_cluster(new_SlugOb, buf_slug);
+
 
   // serialize reconstructed object using old method
   size_t dimBufNew = slug_buffer_size(new_SlugOb);
