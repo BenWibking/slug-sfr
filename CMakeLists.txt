@@ -36,7 +36,7 @@ include(ExternalProject)
 ExternalProject_Add(project_slug
     SOURCE_DIR ${SlugSFR_SOURCE_DIR}/slug2
     CONFIGURE_COMMAND ""
-    BUILD_COMMAND make lib MACHINE=linux-gnu FITS=DISABLE_FITS
+    BUILD_COMMAND make lib MACHINE=linux-clang FITS=DISABLE_FITS
     BUILD_IN_SOURCE 1
     BUILD_BYPRODUCTS <SOURCE_DIR>/src/libslug.so
     INSTALL_COMMAND cp <SOURCE_DIR>/src/libslug.so <INSTALL_DIR>/libslug.so
