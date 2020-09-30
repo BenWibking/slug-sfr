@@ -15,7 +15,6 @@ void slug_object::construct_cluster(double particle_mass)
 // Method to reconstruct the slug_cluster object from a serialized buffer
 void slug_object::reconstruct_cluster(char *buf)
 {
-
   cluster = new slug_cluster(
       (slug_cluster_buffer *)buf, slug_predef.imf("chabrier", 9.0, POISSON),
       slug_predef.tracks("modp020.dat"),
@@ -25,6 +24,28 @@ void slug_object::reconstruct_cluster(char *buf)
       slug_predef.yields("SNII_Sukhbold16_nodecay"), nullptr,
       slug_predef.ostreams, nullptr, true);
 }
+
+// Method to reconstruct the slug_cluster object from a serialized buffer
+template<int N>
+void slug_object::reconstruct_cluster_from_struct(slug_cluster_state<N> &state)
+{
+  cluster = new slug_cluster(
+      state, slug_predef.imf("chabrier", 9.0, POISSON),
+      slug_predef.tracks("modp020.dat"),
+      slug_predef.specsyn("sb99", slug_predef.tracks("modp020.dat"),
+                          slug_predef.imf("chabrier", 9.0, POISSON)),
+      slug_predef.filter_set("QH0"), nullptr, nullptr,
+      slug_predef.yields("SNII_Sukhbold16_nodecay"), nullptr,
+      slug_predef.ostreams, nullptr, true);
+}
+template void slug_object::reconstruct_cluster_from_struct(slug_cluster_state<NISO_SUKHBOLD16> &state);
+
+template<int N>
+void slug_object::serialize_cluster_to_struct(slug_cluster_state<N> &state)
+{
+  cluster->serialize_to_struct(state);
+}
+template void slug_object::serialize_cluster_to_struct(slug_cluster_state<NISO_SUKHBOLD16> &state);
 
 // Method to return the member functions of the slug_cluster
 void slug_object::pack_buffer(char *buf)

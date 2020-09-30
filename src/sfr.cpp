@@ -14,11 +14,12 @@ TEST(SlugObjectTest, SerializesDeserializes)
   slug_pack_buffer(SlugOb, buf_slug);
 
   // TODO: serialize using *new* method
-
+  slug_cluster_state<NISO_SUKHBOLD16> state;
+  SlugOb->serialize_cluster_to_struct(state);
 
   // TODO: deserialize using *new* method
   slug_object *new_SlugOb = slug_object_new();
-
+  new_SlugOb->reconstruct_cluster_from_struct(state);
 
   // serialize reconstructed object using old method
   size_t dimBufNew = slug_buffer_size(new_SlugOb);
@@ -28,6 +29,6 @@ TEST(SlugObjectTest, SerializesDeserializes)
   // check whether new object and old object are equal
   ASSERT_EQ(dimBuf, dimBufNew);
   for(size_t i=0; i < dimBuf; ++i) {
-    ASSERT_EQ(buf_slug[i], buf_slugNew[i]);
+    ASSERT_EQ(buf_slug[i], buf_slugNew[i]) << i;
   }
 }

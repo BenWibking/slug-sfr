@@ -30,6 +30,12 @@ public:
   // Method to reconstruct the slug_cluster object from a serialized buffer
   void reconstruct_cluster(char *buf);
 
+  template<int N>
+  void reconstruct_cluster_from_struct(slug_cluster_state<N> &state);
+
+  template<int N>
+  void serialize_cluster_to_struct(slug_cluster_state<N> &state);
+
   // Method to return the member functions of the slug_cluster
   void pack_buffer(char *buf);
   int buffer_size();
