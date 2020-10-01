@@ -11,8 +11,8 @@ TEST(RngTest, SerializesDeserializes)
   using state_t = pcg_detail::pcg128_t;
   using output_t = uint64_t;
 
-  pcg_detail::RngState<state_t> saved_state;
-  my_rng.serialize_to_struct(&saved_state);
+  state_t saved_state;
+  my_rng.serializeToStruct(&saved_state);
   rng my_saved_rng = my_rng;
   
   int seq_len = 3;
@@ -24,7 +24,7 @@ TEST(RngTest, SerializesDeserializes)
 
   // deserialize RNG
   rng my_new_rng;
-  my_new_rng.deserialize_from_struct(&saved_state);
+  my_new_rng.deserializeFromStruct(&saved_state);
 
   ASSERT_EQ(my_saved_rng, my_new_rng);
 

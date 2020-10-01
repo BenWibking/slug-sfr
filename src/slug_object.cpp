@@ -38,13 +38,15 @@ void slug_object::reconstruct_cluster_from_struct(slug_cluster_state<N> &state)
       slug_predef.yields("SNII_Sukhbold16_nodecay"), nullptr,
       slug_predef.ostreams, nullptr, true);
 }
+// explicitly instantiate template
 template void slug_object::reconstruct_cluster_from_struct(slug_cluster_state<NISO_SUKHBOLD16> &state);
 
 template<int N>
 void slug_object::serialize_cluster_to_struct(slug_cluster_state<N> &state)
 {
-  cluster->serialize_to_struct(state);
+  cluster->serializeToStruct(state);
 }
+// explicitly instantiate template
 template void slug_object::serialize_cluster_to_struct(slug_cluster_state<NISO_SUKHBOLD16> &state);
 
 // Method to return the member functions of the slug_cluster

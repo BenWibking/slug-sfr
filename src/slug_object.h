@@ -45,7 +45,6 @@ public:
   double get_stellar_mass();
   double get_photometry_QH0(); // ionising luminosity [photon/s]
 
-protected:
   // This is a pointer to the slug_cluster object
   slug_cluster *cluster;
 };
