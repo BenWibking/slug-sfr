@@ -4,8 +4,8 @@
 TEST(SlugObjectTest, SerializesDeserializes)
 {
   // create slug_cluster object
-  constexpr double particle_mass = 500.; // solar masses
-  constexpr double dt = 1.0e6; // units??
+  constexpr double particle_mass = 5.0e3; // solar masses
+  constexpr double dt = 5.0e6; // years
 
   slug_object *SlugOb = slug_object_new();
   slug_construct_cluster(SlugOb, particle_mass);
