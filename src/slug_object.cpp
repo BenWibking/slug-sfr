@@ -1,42 +1,57 @@
 #include "slug_object.h"
 
+constexpr auto do_stochastic_only = false;
+constexpr auto minimum_stochastic_mass = 9.0;
+constexpr auto stochastic_sampling_type = POISSON;
+constexpr auto imf_type = "chabrier";
+constexpr auto stellar_tracks = "modp020.dat";
+constexpr auto spectral_synthesis = "sb99";
+constexpr auto spectral_filter = "QH0";
+constexpr auto yield_table = "SNII_Sukhbold16_nodecay";
+
+constexpr auto slug_cluster_internal_ID = 1;
+constexpr auto slug_cluster_internal_time = 0.;
+
 void slug_object::construct_cluster(double particle_mass)
 {
   cluster = new slug_cluster(
-      1, particle_mass, 0.0, slug_predef.imf("chabrier", 9.0, POISSON),
-      slug_predef.tracks("modp020.dat"),
-      slug_predef.specsyn("sb99", slug_predef.tracks("modp020.dat"),
-                          slug_predef.imf("chabrier", 9.0, POISSON)),
-      slug_predef.filter_set("QH0"), nullptr, nullptr,
-      slug_predef.yields("SNII_Sukhbold16_nodecay"), nullptr,
-      slug_predef.ostreams, nullptr, true);
+      slug_cluster_internal_ID, particle_mass, slug_cluster_internal_time,
+      slug_predef.imf(imf_type, minimum_stochastic_mass, stochastic_sampling_type),
+      slug_predef.tracks(stellar_tracks),
+      slug_predef.specsyn(spectral_synthesis, slug_predef.tracks(stellar_tracks),
+                          slug_predef.imf(imf_type, minimum_stochastic_mass, stochastic_sampling_type)),
+      slug_predef.filter_set(spectral_filter), nullptr, nullptr,
+      slug_predef.yields(yield_table), nullptr,
+      slug_predef.ostreams, nullptr, do_stochastic_only);
 }
 
 // Method to reconstruct the slug_cluster object from a serialized buffer
 void slug_object::reconstruct_cluster(char *buf)
 {
   cluster = new slug_cluster(
-      (slug_cluster_buffer *)buf, slug_predef.imf("chabrier", 9.0, POISSON),
-      slug_predef.tracks("modp020.dat"),
-      slug_predef.specsyn("sb99", slug_predef.tracks("modp020.dat"),
-                          slug_predef.imf("chabrier", 9.0, POISSON)),
-      slug_predef.filter_set("QH0"), nullptr, nullptr,
-      slug_predef.yields("SNII_Sukhbold16_nodecay"), nullptr,
-      slug_predef.ostreams, nullptr, true);
+      (slug_cluster_buffer *)buf,
+      slug_predef.imf(imf_type, minimum_stochastic_mass, stochastic_sampling_type),
+      slug_predef.tracks(stellar_tracks),
+      slug_predef.specsyn(spectral_synthesis, slug_predef.tracks(stellar_tracks),
+                          slug_predef.imf(imf_type, minimum_stochastic_mass, stochastic_sampling_type)),
+      slug_predef.filter_set(spectral_filter), nullptr, nullptr,
+      slug_predef.yields(yield_table), nullptr,
+      slug_predef.ostreams, nullptr, do_stochastic_only);
 }
 
 // Method to reconstruct the slug_cluster object from a serialized buffer
-template<int N>
+template <int N>
 void slug_object::reconstruct_cluster_from_struct(slug_cluster_state<N> &state)
 {
   cluster = new slug_cluster(
-      state, slug_predef.imf("chabrier", 9.0, POISSON),
-      slug_predef.tracks("modp020.dat"),
-      slug_predef.specsyn("sb99", slug_predef.tracks("modp020.dat"),
-                          slug_predef.imf("chabrier", 9.0, POISSON)),
-      slug_predef.filter_set("QH0"), nullptr, nullptr,
-      slug_predef.yields("SNII_Sukhbold16_nodecay"), nullptr,
-      slug_predef.ostreams, nullptr, true);
+      state,
+      slug_predef.imf(imf_type, minimum_stochastic_mass, stochastic_sampling_type),
+      slug_predef.tracks(stellar_tracks),
+      slug_predef.specsyn(spectral_synthesis, slug_predef.tracks(stellar_tracks),
+                          slug_predef.imf(imf_type, minimum_stochastic_mass, stochastic_sampling_type)),
+      slug_predef.filter_set(spectral_filter), nullptr, nullptr,
+      slug_predef.yields(yield_table), nullptr,
+      slug_predef.ostreams, nullptr, do_stochastic_only);
 }
 // explicitly instantiate template
 template void slug_object::reconstruct_cluster_from_struct(slug_cluster_state<NISO_SUKHBOLD16> &state);
