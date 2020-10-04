@@ -1,7 +1,7 @@
 #include "slug_object.h"
 
 constexpr auto do_stochastic_only = false;
-constexpr auto minimum_stochastic_mass = 9.0;
+constexpr auto minimum_stochastic_mass = 8.0;
 constexpr auto stochastic_sampling_type = POISSON;
 constexpr auto imf_type = "chabrier";
 constexpr auto stellar_tracks = "modp020.dat";

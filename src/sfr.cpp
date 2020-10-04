@@ -24,7 +24,11 @@ TEST(SlugObjectTest, SerializesDeserializes)
 
   // serialize using new method
   slug_cluster_state<NISO_SUKHBOLD16> state;
+  std::cout << "slug_cluster_state<" << NISO_SUKHBOLD16 << "> is " << sizeof(state) << " bytes." << std::endl;
   SlugOb->serialize_cluster_to_struct(state);
+
+  slug_cluster_state<2> state_small;
+  std::cout << "slug_cluster_state<2> is " << sizeof(state_small) << " bytes." << std::endl;
 
   // deserialize using new method
   slug_object *new_SlugOb = slug_object_new();
