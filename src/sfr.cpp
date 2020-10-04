@@ -30,14 +30,15 @@ TEST(SlugObjectTest, SerializesDeserializes)
 
   // print sizes of structs (in bytes)
   slug_cluster_state<2> state_small;
-  std::cout << "slug_cluster_state<" << NISO_SUKHBOLD16 << "> is " << sizeof(state) << " bytes." << std::endl;
+  std::cout << "slug_cluster_state<" << NISO_SUKHBOLD16 << "> is "
+            << sizeof(state) << " bytes." << std::endl;
   std::cout << "slug_cluster_state<2> is " << sizeof(state_small) << " bytes." << std::endl;
 
   // deserialize using new method
   slug_object *new_SlugOb = slug_object_new();
   new_SlugOb->reconstruct_cluster_from_struct(state);
 
-  // check whether old and new object are equal using operator==
+  // check whether old and new object are equal
   //EXPECT_EQ((*new_SlugOb->cluster), (*SlugOb->cluster));
   auto oldData = SlugOb->cluster->tied();
   auto newData = new_SlugOb->cluster->tied();
@@ -49,6 +50,8 @@ TEST(SlugObjectTest, SerializesDeserializes)
                       << ") are not equal!";
   });
 
+#if 0
+  // print out vector of stellar masses (stochastic part)
   constexpr auto stars_index = 32;
   auto printStars = [](std::vector<double> stars)
   {
@@ -60,8 +63,6 @@ TEST(SlugObjectTest, SerializesDeserializes)
     std::cout << std::endl;
   };
 
-  // print out vector of stellar masses (stochastic part)
-#if 0
   auto oldStars = std::get<0>(std::get<stars_index>(oldData));
   auto newStars = std::get<0>(std::get<stars_index>(newData));
   std::cout << "old stars = ";
@@ -70,9 +71,10 @@ TEST(SlugObjectTest, SerializesDeserializes)
   printStars(newStars);
 #endif
 
+#if 0
   // check whether new object and old object are equal by comparing
   // serialized outputs from the old method
-#if 0
+  
   // serialize original object using old method
   size_t dimBuf = slug_buffer_size(SlugOb);
   char *buf_slug = (char *)malloc(dimBuf);
