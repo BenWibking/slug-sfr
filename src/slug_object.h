@@ -12,7 +12,18 @@
 #include <slug_cluster.H>
 #include <slug_predefined.H>
 
-// must include declaration of slug_cluster
+constexpr auto do_stochastic_only = false;
+constexpr auto minimum_stochastic_mass = 8.0;
+constexpr auto stochastic_sampling_type = POISSON;
+constexpr auto imf_type = "chabrier";
+constexpr auto stellar_tracks = "modp020.dat";
+constexpr auto spectral_synthesis = "sb99";
+constexpr auto spectral_filter = "QH0";
+constexpr auto yield_table = "SNII_Sukhbold16_nodecay";
+
+constexpr auto slug_cluster_internal_ID = 1;
+constexpr auto slug_cluster_internal_time = 0.;
+
 class slug_object {
 public:
   // Constructor
@@ -28,7 +39,7 @@ public:
   void construct_cluster(double particle_mass);
 
   // Method to reconstruct the slug_cluster object from a serialized buffer
-  void reconstruct_cluster(char *buf);
+  //void reconstruct_cluster(char *buf);
 
   template<int N>
   void reconstruct_cluster_from_struct(slug_cluster_state<N> &state);
@@ -37,8 +48,8 @@ public:
   void serialize_cluster_to_struct(slug_cluster_state<N> &state);
 
   // Method to return the member functions of the slug_cluster
-  void pack_buffer(char *buf);
-  int buffer_size();
+  //void pack_buffer(char *buf);
+  //int buffer_size();
   void advance(double particle_age); // particle_age [yr]
   int get_stoch_sn();
   double get_birth_mass();

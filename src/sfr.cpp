@@ -71,24 +71,4 @@ TEST(SlugObjectTest, SerializesDeserializes)
   printStars(newStars);
 #endif
 
-#if 0
-  // check whether new object and old object are equal by comparing
-  // serialized outputs from the old method
-  
-  // serialize original object using old method
-  size_t dimBuf = slug_buffer_size(SlugOb);
-  char *buf_slug = (char *)malloc(dimBuf);
-  slug_pack_buffer(SlugOb, buf_slug);
-
-  // serialize reconstructed object using old method
-  size_t dimBufNew = slug_buffer_size(new_SlugOb);
-  char *buf_slugNew = (char *) malloc(dimBufNew);
-  slug_pack_buffer(new_SlugOb, buf_slugNew);
-
-  EXPECT_EQ(dimBuf, dimBufNew);
-  for(size_t i=0; i < dimBuf; ++i) {
-    ASSERT_EQ(buf_slug[i], buf_slugNew[i]) << i;
-  }
-#endif
-
 }
