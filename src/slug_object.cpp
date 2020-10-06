@@ -10,7 +10,7 @@ void slug_object::construct_cluster(double particle_mass)
                           slug_predef.imf(imf_type, minimum_stochastic_mass, stochastic_sampling_type)),
       slug_predef.filter_set(spectral_filter), nullptr, nullptr,
       slug_predef.yields(yield_table), nullptr,
-      slug_predef.ostreams, nullptr, do_stochastic_only);
+      slug_predef.ostreams, nullptr, do_stochastic_only, compute_yields);
 }
 
 // Method to reconstruct the slug_cluster object from a serialized buffer
@@ -25,7 +25,7 @@ void slug_object::reconstruct_cluster_from_struct(slug_cluster_state<N> &state)
                           slug_predef.imf(imf_type, minimum_stochastic_mass, stochastic_sampling_type)),
       slug_predef.filter_set(spectral_filter), nullptr, nullptr,
       slug_predef.yields(yield_table), nullptr,
-      slug_predef.ostreams, nullptr, do_stochastic_only);
+      slug_predef.ostreams, nullptr, do_stochastic_only, compute_yields);
 }
 // explicitly instantiate template
 template void slug_object::reconstruct_cluster_from_struct(slug_cluster_state<NISO_SUKHBOLD16> &state);

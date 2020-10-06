@@ -20,6 +20,7 @@ constexpr auto stellar_tracks = "modp020.dat";
 constexpr auto spectral_synthesis = "sb99";
 constexpr auto spectral_filter = "QH0";
 constexpr auto yield_table = "SNII_Sukhbold16_nodecay";
+constexpr auto compute_yields = true;
 
 constexpr auto slug_cluster_internal_ID = 1;
 constexpr auto slug_cluster_internal_time = 0.;

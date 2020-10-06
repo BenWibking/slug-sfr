@@ -17,10 +17,6 @@ TEST(SlugObjectTest, SerializesDeserializes)
   {
     t += dt;
     slug_advance(SlugOb, t);
-
-    // cluster->get_yield() has side effects -- this is a bug
-    SlugOb->cluster->get_yield(); // this *must* be called, otherwise
-                                  // yields will not be calculated from the previous timestep!
   }
   std::cout << "Advanced star cluster to time t = " << t << std::endl;
 
@@ -39,9 +35,9 @@ TEST(SlugObjectTest, SerializesDeserializes)
   new_SlugOb->reconstruct_cluster_from_struct(state);
 
   // check whether old and new object are equal
-  //EXPECT_EQ((*new_SlugOb->cluster), (*SlugOb->cluster));
-  auto oldData = SlugOb->cluster->tied();
-  auto newData = new_SlugOb->cluster->tied();
+  auto oldData = SlugOb->cluster->make_tuple();
+  auto newData = new_SlugOb->cluster->make_tuple();
+
   for_each2(oldData, newData, [](auto index, auto &&oldDataElem, auto &&newDataElem) {
     EXPECT_EQ(oldDataElem, newDataElem) << "Tuple elements at index "
                       << index
