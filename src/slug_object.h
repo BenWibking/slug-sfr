@@ -12,19 +12,6 @@
 #include <slug_cluster.H>
 #include <slug_predefined.H>
 
-constexpr auto do_stochastic_only = false;
-constexpr auto minimum_stochastic_mass = 8.0;
-constexpr auto stochastic_sampling_type = POISSON;
-constexpr auto imf_type = "chabrier";
-constexpr auto stellar_tracks = "modp020.dat";
-constexpr auto spectral_synthesis = "sb99";
-constexpr auto spectral_filter = "QH0";
-constexpr auto yield_table = "SNII_Sukhbold16_nodecay";
-constexpr auto compute_yields = true;
-
-constexpr auto slug_cluster_internal_ID = 1;
-constexpr auto slug_cluster_internal_time = 0.;
-
 class slug_object {
 public:
   // Constructor
@@ -51,7 +38,7 @@ public:
   // Method to return the member functions of the slug_cluster
   //void pack_buffer(char *buf);
   //int buffer_size();
-  void advance(double particle_age); // particle_age [yr]
+  void advance_to_time(double particle_age); // particle_age [yr]
   int get_stoch_sn();
   double get_birth_mass();
   double get_stellar_mass();
@@ -75,7 +62,7 @@ void slug_construct_cluster(slug_object *SlugOb, double particle_mass);
 void slug_reconstruct_cluster(slug_object *SlugOb, char *buf);
 void slug_pack_buffer(slug_object *SlugOb, char *buf);
 int slug_buffer_size(slug_object *SlugOb);
-void slug_advance(slug_object *SlugOb, double particle_age);
+void slug_advance_to_time(slug_object *SlugOb, double particle_age);
 int slug_get_stoch_sn(slug_object *SlugOb);
 double slug_get_birth_mass(slug_object *SlugOb);
 double slug_get_stellar_mass(slug_object *SlugOb);

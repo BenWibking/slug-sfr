@@ -16,7 +16,7 @@ TEST(SlugObjectTest, SerializesDeserializes)
   for (int i = 0; i < max_timesteps; ++i)
   {
     t += dt;
-    slug_advance(SlugOb, t);
+    slug_advance_to_time(SlugOb, t);
   }
   std::cout << "Advanced star cluster to time t = " << t << " years." << std::endl;
 

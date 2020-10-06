@@ -1,5 +1,18 @@
 #include "slug_object.h"
 
+constexpr auto do_stochastic_only = false;
+constexpr auto minimum_stochastic_mass = 8.0;
+constexpr auto stochastic_sampling_type = POISSON;
+constexpr auto imf_type = "chabrier";
+constexpr auto stellar_tracks = "modp020.dat";
+constexpr auto spectral_synthesis = "sb99";
+constexpr auto spectral_filter = "QH0";
+constexpr auto yield_table = "SNII_Sukhbold16_nodecay";
+constexpr auto compute_yields = true;
+
+constexpr auto slug_cluster_internal_ID = 1;
+constexpr auto slug_cluster_internal_time = 0.;
+
 void slug_object::construct_cluster(double particle_mass)
 {
   cluster = new slug_cluster(
@@ -38,10 +51,9 @@ void slug_object::serialize_cluster_to_struct(slug_cluster_state<N> &state)
 // explicitly instantiate template
 template void slug_object::serialize_cluster_to_struct(slug_cluster_state<NISO_SUKHBOLD16> &state);
 
-void slug_object::advance(double particle_age)
+void slug_object::advance_to_time(double particle_age)
 {
   cluster->advance(particle_age);
-  // FIXME: yields should also be recalculated whenever advance() is called.
 }
 
 int slug_object::get_stoch_sn()
@@ -81,9 +93,9 @@ extern "C"
     S->construct_cluster(particle_mass);
   }
 
-  void slug_advance(slug_object *S, double particle_age)
+  void slug_advance_to_time(slug_object *S, double particle_age)
   {
-    return S->advance(particle_age);
+    return S->advance_to_time(particle_age);
   }
 
   int slug_get_stoch_sn(slug_object *S)
