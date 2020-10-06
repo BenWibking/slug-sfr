@@ -1,6 +1,8 @@
 #include <gtest/gtest.h>
 #include "sfr.h"
 
+#define PRINT_SIZES
+
 TEST(SlugWrapperTest, SerializesDeserializes)
 {
   // create slug_cluster object
@@ -24,13 +26,28 @@ TEST(SlugWrapperTest, SerializesDeserializes)
   slug_cluster_state<NISO_SUKHBOLD16> state;
   SlugOb.serializeCluster(state);
 
-#if 0
+#if defined(PRINT_SIZES)
   // print sizes of structs (in bytes)
   slug_cluster_state<2> state_small;
   std::cout << "slug_cluster_state<" << NISO_SUKHBOLD16 << "> is "
             << sizeof(state) << " bytes." << std::endl;
   std::cout << "slug_cluster_state<2> is " << sizeof(state_small) << " bytes." << std::endl;
 #endif
+
+// SLUG structs
+// slug_cluster_state<302> is 7472 bytes.
+// slug_cluster_state<2> is 272 bytes.
+//
+// GIZMO structs
+// Size of particle structure     352  [bytes]
+// Size of hydro-cell structure   640  [bytes]
+// 
+// For low-res AGORA:
+// 81.5839 MByte for particle storage.
+// 143.051 MByte for storage of hydro data.
+//
+// Therefore, 28.1% increase in memory usage if slug_cluster_state<2>
+// is added to particle_data.
 
   // deserialize
   slugWrapper new_SlugOb;
