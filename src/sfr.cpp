@@ -5,22 +5,22 @@ TEST(SlugObjectTest, SerializesDeserializes)
 {
   // create slug_cluster object
   constexpr double particle_mass = 5.0e3; // solar masses
-  constexpr double dt = 1.0e6; // years
-  double t = 0.; // years
+  constexpr double dt = 1.0e6;            // years
+  double t = 0.;                          // years
 
   slug_object *SlugOb = slug_object_new();
   slug_construct_cluster(SlugOb, particle_mass);
   std::cout << "Constructed cluster of mass = " << particle_mass << " Msun." << std::endl;
 
-  constexpr int max_timesteps = 5;
+  constexpr int max_timesteps = 10;
   for (int i = 0; i < max_timesteps; ++i)
   {
     t += dt;
     slug_advance(SlugOb, t);
   }
-  std::cout << "Advanced star cluster to time t = " << t << std::endl;
+  std::cout << "Advanced star cluster to time t = " << t << " years." << std::endl;
 
-  // serialize using new method
+  // serialize
   slug_cluster_state<NISO_SUKHBOLD16> state;
   SlugOb->serialize_cluster_to_struct(state);
 
@@ -30,7 +30,7 @@ TEST(SlugObjectTest, SerializesDeserializes)
             << sizeof(state) << " bytes." << std::endl;
   std::cout << "slug_cluster_state<2> is " << sizeof(state_small) << " bytes." << std::endl;
 
-  // deserialize using new method
+  // deserialize
   slug_object *new_SlugOb = slug_object_new();
   new_SlugOb->reconstruct_cluster_from_struct(state);
 
@@ -45,26 +45,5 @@ TEST(SlugObjectTest, SerializesDeserializes)
                       << type_name<decltype(oldDataElem)>()
                       << ") are not equal!";
   });
-
-#if 0
-  // print out vector of stellar masses (stochastic part)
-  constexpr auto stars_index = 32;
-  auto printStars = [](std::vector<double> stars)
-  {
-    for (size_t i = 0; i < (stars.size() - 1); ++i)
-    {
-      std::cout << stars[i] << ", ";
-    }
-    std::cout << stars[stars.size()-1];
-    std::cout << std::endl;
-  };
-
-  auto oldStars = std::get<0>(std::get<stars_index>(oldData));
-  auto newStars = std::get<0>(std::get<stars_index>(newData));
-  std::cout << "old stars = ";
-  printStars(oldStars);
-  std::cout << "new stars = ";
-  printStars(newStars);
-#endif
 
 }
