@@ -1,5 +1,5 @@
 blt_add_executable(NAME test_sfr
-    SOURCES sfr.cpp slug_object.cpp
+    SOURCES sfr.cpp slug_wrapper.cpp
     DEPENDS_ON mpi slug pcg gsl boost gtest)
 
 blt_add_executable(NAME test_rng
@@ -13,7 +13,7 @@ blt_add_test(NAME test_rng
     COMMAND test_rng)
 
 blt_add_code_checks(PREFIX test_sfr
-    SOURCES sfr.cpp slug_object.cpp)
+    SOURCES sfr.cpp slug_wrapper.cpp)
 
 blt_add_code_checks(PREFIX test_rng
     SOURCES rng.cpp)

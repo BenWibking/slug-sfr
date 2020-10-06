@@ -2,9 +2,7 @@
 #define SFR_H_
 
 #include <cstdio>
-#include <malloc.h>
-
-#include "slug_object.h"
+#include "slug_wrapper.h"
 
 // template magic
 

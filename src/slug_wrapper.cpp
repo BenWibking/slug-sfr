@@ -1,4 +1,4 @@
-#include "slug_object.h"
+#include "slug_wrapper.h"
 
 constexpr auto do_stochastic_only = false;
 constexpr auto minimum_stochastic_mass = 8.0;
@@ -13,7 +13,7 @@ constexpr auto compute_yields = true;
 constexpr auto slug_cluster_internal_ID = 1;
 constexpr auto slug_cluster_internal_time = 0.;
 
-void slug_object::construct_cluster(double particle_mass)
+void slugWrapper::constructCluster(double particle_mass)
 {
   cluster = new slug_cluster(
       slug_cluster_internal_ID, particle_mass, slug_cluster_internal_time,
@@ -28,7 +28,7 @@ void slug_object::construct_cluster(double particle_mass)
 
 // Method to reconstruct the slug_cluster object from a serialized buffer
 template <int N>
-void slug_object::reconstruct_cluster_from_struct(slug_cluster_state<N> &state)
+void slugWrapper::reconstructCluster(slug_cluster_state<N> &state)
 {
   cluster = new slug_cluster(
       state,
@@ -40,84 +40,38 @@ void slug_object::reconstruct_cluster_from_struct(slug_cluster_state<N> &state)
       slug_predef.yields(yield_table), nullptr,
       slug_predef.ostreams, nullptr, do_stochastic_only, compute_yields);
 }
-// explicitly instantiate template
-template void slug_object::reconstruct_cluster_from_struct(slug_cluster_state<NISO_SUKHBOLD16> &state);
+// explicitly instantiate template for N = NISO_SUKHBOLD16
+template void slugWrapper::reconstructCluster(slug_cluster_state<NISO_SUKHBOLD16> &state);
 
 template <int N>
-void slug_object::serialize_cluster_to_struct(slug_cluster_state<N> &state)
+void slugWrapper::serializeCluster(slug_cluster_state<N> &state)
 {
   cluster->serializeToStruct(state);
 }
-// explicitly instantiate template
-template void slug_object::serialize_cluster_to_struct(slug_cluster_state<NISO_SUKHBOLD16> &state);
+// explicitly instantiate template for N = NISO_SUKHBOLD16
+template void slugWrapper::serializeCluster(slug_cluster_state<NISO_SUKHBOLD16> &state);
 
-void slug_object::advance_to_time(double particle_age)
+void slugWrapper::advanceToTime(double particle_age)
 {
   cluster->advance(particle_age);
 }
 
-int slug_object::get_stoch_sn()
+int slugWrapper::get_stoch_sn()
 {
   return cluster->get_stoch_sn();
 }
 
-double slug_object::get_birth_mass()
+double slugWrapper::get_birth_mass()
 {
   return cluster->get_birth_mass();
 }
 
-double slug_object::get_stellar_mass()
+double slugWrapper::get_stellar_mass()
 {
   return cluster->get_stellar_mass();
 }
 
-double slug_object::get_photometry_QH0()
+double slugWrapper::get_photometry_QH0()
 {
   return cluster->get_photometry()[0];
-}
-
-extern "C"
-{
-  slug_object *slug_object_new()
-  {
-    return new slug_object();
-  }
-
-  void slug_object_delete(slug_object *S)
-  {
-    delete S;
-  }
-
-  void slug_construct_cluster(slug_object *S, double particle_mass)
-  {
-    S->construct_cluster(particle_mass);
-  }
-
-  void slug_advance_to_time(slug_object *S, double particle_age)
-  {
-    return S->advance_to_time(particle_age);
-  }
-
-  int slug_get_stoch_sn(slug_object *S)
-  {
-    // this is also saved in the serialized struct
-    return S->get_stoch_sn();
-  }
-
-  double slug_get_birth_mass(slug_object *S)
-  {
-    // this is also saved in the serialized struct
-    return S->get_birth_mass();
-  }
-
-  double slug_get_stellar_mass(slug_object *S)
-  {
-    // this is also saved in the serialized struct
-    return S->get_stellar_mass();
-  }
-
-  double slug_get_photometry_QH0(slug_object *S)
-  {
-    return S->get_photometry_QH0();
-  }
 }
