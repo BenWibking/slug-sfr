@@ -23,10 +23,10 @@ public:
 
   auto advanceToTime(double particle_age) -> std::vector<double>; // particle_age [yr]
   
-  int get_stoch_sn();
-  double get_birth_mass();
-  double get_stellar_mass();
-  double get_photometry_QH0(); // ionising luminosity [photon/s]
+  int getStochasticSN();
+  double getBirthMass();
+  double getStellarMass();
+  double getPhotometryQH0(); // ionising luminosity [photon/s]
 
   // This is a pointer to the slug_cluster object
   slug_cluster *cluster;

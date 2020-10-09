@@ -60,22 +60,22 @@ auto slugWrapper::advanceToTime(double particle_age) -> std::vector<double>
   return delta_yields;
 }
 
-int slugWrapper::get_stoch_sn()
+int slugWrapper::getStochasticSN()
 {
   return cluster->get_stoch_sn();
 }
 
-double slugWrapper::get_birth_mass()
+double slugWrapper::getBirthMass()
 {
   return cluster->get_birth_mass();
 }
 
-double slugWrapper::get_stellar_mass()
+double slugWrapper::getStellarMass()
 {
   return cluster->get_stellar_mass();
 }
 
-double slugWrapper::get_photometry_QH0()
+double slugWrapper::getPhotometryQH0()
 {
   return cluster->get_photometry()[0];
 }
