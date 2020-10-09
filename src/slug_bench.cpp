@@ -11,7 +11,6 @@ static void SlugSerializeDeserialize(benchmark::State& state)
   double t = 0.;                          // years
   slugWrapper SlugOb;
   SlugOb.constructCluster(particle_mass);
-  std::cout << "Constructed cluster of mass = " << particle_mass << " Msun." << std::endl;
 
   // advance in time
   constexpr int max_timesteps = 10;
@@ -25,12 +24,11 @@ static void SlugSerializeDeserialize(benchmark::State& state)
     }
   }
 
-  std::cout << "Advanced star cluster to time t = " << t << " years." << std::endl;
-
   // benchmark
   double numSerializations = 0;
   for (auto _ : state) {
-    // This code gets timed
+    // This part of the code gets timed.
+    // (Tests on my MacBook Pro show this takes about ~3 milliseconds/iteration.)
 
     // serialize
     slug_cluster_state<NISO_SUKHBOLD16> state;
@@ -49,7 +47,7 @@ BENCHMARK(SlugSerializeDeserialize);
 BENCHMARK_MAIN();
 
 // ➜  build git:(master) ✗ bin/slug_benchmark
-// 2020-10-09 11:34:15
+// 2020-10-09 11:42:27
 // Running bin/slug_benchmark
 // Run on (2 X 2800 MHz CPU s)
 // CPU Caches:
@@ -57,16 +55,8 @@ BENCHMARK_MAIN();
 //   L1 Instruction 32K (x2)
 //   L2 Unified 256K (x2)
 //   L3 Unified 8192K (x2)
-// Load Average: 0.30, 0.40, 0.36
-// Constructed cluster of mass = 5000 Msun.
-// Advanced star cluster to time t = 1e+07 years.
-// Constructed cluster of mass = 5000 Msun.
-// Advanced star cluster to time t = 1e+07 years.
-// Constructed cluster of mass = 5000 Msun.
-// Advanced star cluster to time t = 1e+07 years.
-// Constructed cluster of mass = 5000 Msun.
-// Advanced star cluster to time t = 1e+07 years.
+// Load Average: 0.24, 0.28, 0.31
 // -----------------------------------------------------------------------------------
 // Benchmark                         Time             CPU   Iterations UserCounters...
 // -----------------------------------------------------------------------------------
-// SlugSerializeDeserialize    2584012 ns      2577012 ns          239 SerializeDeserializeRate=388.046/s
+// SlugSerializeDeserialize    3263614 ns      3261646 ns          324 SerializeDeserializeRate=306.594/s
