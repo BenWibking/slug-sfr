@@ -11,7 +11,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # [specify this with `cmake -C host_config.cmake ..`]
 
 # include BLT
-
+set(ENABLE_BENCHMARKS on)
 include(blt/SetupBLT.cmake)
 
 # find external libraries

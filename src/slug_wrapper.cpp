@@ -51,9 +51,19 @@ void slugWrapper::serializeCluster(slug_cluster_state<N> &state)
 // explicitly instantiate template for N = NISO_SUKHBOLD16
 template void slugWrapper::serializeCluster(slug_cluster_state<NISO_SUKHBOLD16> &state);
 
-void slugWrapper::advanceToTime(double particle_age)
+auto slugWrapper::advanceToTime(double particle_age) -> std::vector<double>
 {
+  const std::vector<double> yields_t0 = cluster->get_yield();
   cluster->advance(particle_age);
+  const std::vector<double> yields_t1 = cluster->get_yield();
+
+  std::vector<double> delta_yields(yields_t0.size());
+  
+  for(size_t i=0; i < delta_yields.size(); ++i) {
+    delta_yields[i] = std::max(yields_t1[i] - yields_t0[i], 0.0);
+  }
+
+  return delta_yields;
 }
 
 int slugWrapper::get_stoch_sn()

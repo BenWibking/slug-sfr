@@ -15,28 +15,47 @@ TEST(SlugWrapperTest, SerializesDeserializes)
 
   // advance in time
   constexpr int max_timesteps = 10;
+  std::vector<double> yields(NISO_SUKHBOLD16, 0.0);
   for (int i = 0; i < max_timesteps; ++i)
   {
     t += dt;
-    SlugOb.advanceToTime(t);
+    const std::vector<double> delta_yields = SlugOb.advanceToTime(t);
+    for(size_t i = 0; i < delta_yields.size(); ++i) {
+      yields[i] += delta_yields[i];
+    }
   }
+
   std::cout << "Advanced star cluster to time t = " << t << " years." << std::endl;
+  std::cout << "Yields = (";
+  constexpr size_t max_niso = 10;
+  const auto max_yields_size = std::min(yields.size(), max_niso);
+  for (size_t i = 0; i < (max_yields_size - 1); ++i)
+  {
+    std::cout << yields[i] << ", ";
+  }
+  std::cout << yields[max_yields_size - 1] << ")" << std::endl;
 
   // serialize
+  // NOTE: key insight -> yields never need to be serialized!
+  //        we only ever care about the incremental yield at a given timestep!!
+  //
+  //  We assume that the user will *always* call get_yield() after calling advance().
+  //  (Otherwise, yield information will obviously be lost.)
+  //
   slug_cluster_state<NISO_SUKHBOLD16> state;
   SlugOb.serializeCluster(state);
 
 #if defined(PRINT_SIZES)
   // print sizes of structs (in bytes)
-  slug_cluster_state<2> state_small;
+  slug_cluster_state<0> state_small;
   std::cout << "slug_cluster_state<" << NISO_SUKHBOLD16 << "> is "
             << sizeof(state) << " bytes." << std::endl;
-  std::cout << "slug_cluster_state<2> is " << sizeof(state_small) << " bytes." << std::endl;
+  std::cout << "slug_cluster_state<0> is " << sizeof(state_small) << " bytes." << std::endl;
 #endif
 
 // SLUG structs
 // slug_cluster_state<302> is 7472 bytes.
-// slug_cluster_state<2> is 272 bytes.
+// slug_cluster_state<0> is 224 bytes.
 //
 // GIZMO structs
 // Size of particle structure     352  [bytes]
@@ -46,8 +65,8 @@ TEST(SlugWrapperTest, SerializesDeserializes)
 // 81.5839 MByte for particle storage.
 // 143.051 MByte for storage of hydro data.
 //
-// Therefore, 28.1% increase in memory usage if slug_cluster_state<2>
-// is added to particle_data.
+// Therefore, 23.1% increase in memory usage if slug_cluster_state<0>
+// is added to particle_data (neglecting alignment padding, which causes additional overhead)
 
   // deserialize
   slugWrapper new_SlugOb;
