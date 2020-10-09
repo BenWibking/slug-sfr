@@ -1,7 +1,7 @@
 #include "slug_wrapper.h"
 
-constexpr auto do_stochastic_only = false;
-constexpr auto minimum_stochastic_mass = 8.0;
+constexpr auto do_stochastic_only = true; // true is okay if only radioisotopes
+constexpr auto minimum_stochastic_mass = 9.0; // minimum SNe mass is 9 Msun for Sukhbold16
 constexpr auto stochastic_sampling_type = POISSON;
 constexpr auto imf_type = "chabrier";
 constexpr auto stellar_tracks = "modp020.dat";
@@ -27,8 +27,7 @@ void slugWrapper::constructCluster(double particle_mass)
 }
 
 // Method to reconstruct the slug_cluster object from a serialized buffer
-template <int N>
-void slugWrapper::reconstructCluster(slug_cluster_state<N> &state)
+void slugWrapper::reconstructCluster(slug_cluster_state_noyields &state)
 {
   cluster = new slug_cluster(
       state,
@@ -40,16 +39,11 @@ void slugWrapper::reconstructCluster(slug_cluster_state<N> &state)
       slug_predef.yields(yield_table), nullptr,
       slug_predef.ostreams, nullptr, do_stochastic_only, compute_yields);
 }
-// explicitly instantiate template for N = NISO_SUKHBOLD16
-template void slugWrapper::reconstructCluster(slug_cluster_state<NISO_SUKHBOLD16> &state);
 
-template <int N>
-void slugWrapper::serializeCluster(slug_cluster_state<N> &state)
+void slugWrapper::serializeCluster(slug_cluster_state_noyields &state)
 {
-  cluster->serializeToStruct(state);
+  cluster->serializeToStructWithoutYields(state);
 }
-// explicitly instantiate template for N = NISO_SUKHBOLD16
-template void slugWrapper::serializeCluster(slug_cluster_state<NISO_SUKHBOLD16> &state);
 
 auto slugWrapper::advanceToTime(double particle_age) -> std::vector<double>
 {

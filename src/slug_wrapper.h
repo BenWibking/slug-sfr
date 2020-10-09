@@ -18,12 +18,8 @@ public:
 
   // Method to construct the slug_cluster object from particle mass
   void constructCluster(double particle_mass);
-
-  template<int N>
-  void reconstructCluster(slug_cluster_state<N> &state);
-
-  template<int N>
-  void serializeCluster(slug_cluster_state<N> &state);
+  void reconstructCluster(slug_cluster_state_noyields &state);
+  void serializeCluster(slug_cluster_state_noyields &state);
 
   auto advanceToTime(double particle_age) -> std::vector<double>; // particle_age [yr]
   

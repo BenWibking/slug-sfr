@@ -31,7 +31,7 @@ static void SlugSerializeDeserialize(benchmark::State& state)
     // (Tests on my MacBook Pro show this takes about ~3 milliseconds/iteration.)
 
     // serialize
-    slug_cluster_state<NISO_SUKHBOLD16> state;
+    slug_cluster_state_noyields state;
     SlugOb.serializeCluster(state);
 
     // deserialize

@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include "sfr.h"
 
-#define PRINT_SIZES
+#define PRINT_SIZE
 
 TEST(SlugWrapperTest, SerializesDeserializes)
 {
@@ -15,47 +15,28 @@ TEST(SlugWrapperTest, SerializesDeserializes)
 
   // advance in time
   constexpr int max_timesteps = 10;
-  std::vector<double> yields(NISO_SUKHBOLD16, 0.0);
   for (int i = 0; i < max_timesteps; ++i)
   {
     t += dt;
-    const std::vector<double> delta_yields = SlugOb.advanceToTime(t);
-    for(size_t i = 0; i < delta_yields.size(); ++i) {
-      yields[i] += delta_yields[i];
-    }
+    const auto delta_yields = SlugOb.advanceToTime(t);
   }
-
   std::cout << "Advanced star cluster to time t = " << t << " years." << std::endl;
-  std::cout << "Yields = (";
-  constexpr size_t max_niso = 10;
-  const auto max_yields_size = std::min(yields.size(), max_niso);
-  for (size_t i = 0; i < (max_yields_size - 1); ++i)
-  {
-    std::cout << yields[i] << ", ";
-  }
-  std::cout << yields[max_yields_size - 1] << ")" << std::endl;
 
   // serialize
-  // NOTE: key insight -> yields never need to be serialized!
-  //        we only ever care about the incremental yield at a given timestep!!
-  //
-  //  We assume that the user will *always* call get_yield() after calling advance().
-  //  (Otherwise, yield information will obviously be lost.)
-  //
-  slug_cluster_state<NISO_SUKHBOLD16> state;
+  // NOTE: yields never need to be serialized!
+  //       we only ever care about the incremental yield at a given timestep!!
+  //       We assume that the user will *always* call get_yield() after calling advance().
+
+  slug_cluster_state_noyields state;
   SlugOb.serializeCluster(state);
 
-#if defined(PRINT_SIZES)
-  // print sizes of structs (in bytes)
-  slug_cluster_state<0> state_small;
-  std::cout << "slug_cluster_state<" << NISO_SUKHBOLD16 << "> is "
-            << sizeof(state) << " bytes." << std::endl;
-  std::cout << "slug_cluster_state<0> is " << sizeof(state_small) << " bytes." << std::endl;
+#if defined(PRINT_SIZE)
+  // print size of struct (in bytes)
+  std::cout << "slug_cluster_state_noyields is " << sizeof(state) << " bytes." << std::endl;
 #endif
 
 // SLUG structs
-// slug_cluster_state<302> is 7472 bytes.
-// slug_cluster_state<0> is 224 bytes.
+// slug_cluster_state_noyields is 224 bytes.
 //
 // GIZMO structs
 // Size of particle structure     352  [bytes]
@@ -65,14 +46,29 @@ TEST(SlugWrapperTest, SerializesDeserializes)
 // 81.5839 MByte for particle storage.
 // 143.051 MByte for storage of hydro data.
 //
-// Therefore, 23.1% increase in memory usage if slug_cluster_state<0>
+// Therefore, 23.1% increase in memory usage if slug_cluster_state_noyields
 // is added to particle_data (neglecting alignment padding, which causes additional overhead)
 
   // deserialize
   slugWrapper new_SlugOb;
   new_SlugOb.reconstructCluster(state);
 
-  // check whether old and new object are equal
+  // advance both old and new objects by one additional timestep dt
+  const double final_t = t + dt;
+  const auto yields_last_timestep_old = SlugOb.advanceToTime(final_t);
+  const auto yields_last_timestep_new = new_SlugOb.advanceToTime(final_t);
+
+  // check whether incremental yields are equal to machine precision
+  for(size_t i = 0; i < yields_last_timestep_new.size(); ++i) {
+    double mean_y = 0.5*(yields_last_timestep_old[i] + yields_last_timestep_new[i]);
+    double abs_error_bound = mean_y * 1.0e-13;
+
+    EXPECT_NEAR(yields_last_timestep_old[i], yields_last_timestep_new[i], abs_error_bound)
+      << "Element " << i << " differs by fractional amount "
+      << std::abs((yields_last_timestep_old[i] - yields_last_timestep_new[i]) / mean_y);
+  }
+
+  // check whether old and new object are equal (does NOT compare cumulative yields)
   auto oldData = (SlugOb.cluster)->make_tuple();
   auto newData = (new_SlugOb.cluster)->make_tuple();
 
