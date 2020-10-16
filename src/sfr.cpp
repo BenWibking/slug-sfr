@@ -18,7 +18,7 @@ TEST(SlugWrapperTest, SerializesDeserializes)
   for (int i = 0; i < max_timesteps; ++i)
   {
     t += dt;
-    const auto delta_yields = SlugOb.advanceToTime(t);
+    SlugOb.advanceToTime(t);
   }
   std::cout << "Advanced star cluster to time t = " << t << " years." << std::endl;
 
@@ -55,8 +55,12 @@ TEST(SlugWrapperTest, SerializesDeserializes)
 
   // advance both old and new objects by one additional timestep dt
   const double final_t = t + dt;
-  const auto yields_last_timestep_old = SlugOb.advanceToTime(final_t);
-  const auto yields_last_timestep_new = new_SlugOb.advanceToTime(final_t);
+
+  SlugOb.advanceToTime(final_t);
+  auto yields_last_timestep_old = SlugOb.getYieldsThisTimestep();
+
+  new_SlugOb.advanceToTime(final_t);
+  auto yields_last_timestep_new = new_SlugOb.getYieldsThisTimestep();
 
   // check whether incremental yields are equal to machine precision
   for(size_t i = 0; i < yields_last_timestep_new.size(); ++i) {

@@ -14,14 +14,10 @@ static void SlugSerializeDeserialize(benchmark::State& state)
 
   // advance in time
   constexpr int max_timesteps = 10;
-  std::vector<double> yields(NISO_SUKHBOLD16, 0.0);
   for (int i = 0; i < max_timesteps; ++i)
   {
     t += dt;
-    const std::vector<double> delta_yields = SlugOb.advanceToTime(t);
-    for(size_t i = 0; i < delta_yields.size(); ++i) {
-      yields[i] += delta_yields[i];
-    }
+    SlugOb.advanceToTime(t);
   }
 
   // benchmark
