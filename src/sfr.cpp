@@ -9,8 +9,7 @@ TEST(SlugWrapperTest, SerializesDeserializes)
   constexpr double particle_mass = 5.0e3; // solar masses
   constexpr double dt = 1.0e6;            // years
   double t = 0.;                          // years
-  slugWrapper SlugOb;
-  SlugOb.constructCluster(particle_mass);
+  slugWrapper SlugOb(particle_mass);
   std::cout << "Constructed cluster of mass = " << particle_mass << " Msun." << std::endl;
 
   // advance in time
@@ -50,8 +49,7 @@ TEST(SlugWrapperTest, SerializesDeserializes)
 // is added to particle_data (neglecting alignment padding, which causes additional overhead)
 
   // deserialize
-  slugWrapper new_SlugOb;
-  new_SlugOb.reconstructCluster(state);
+  slugWrapper new_SlugOb(state);
 
   // advance both old and new objects by one additional timestep dt
   const double final_t = t + dt;
@@ -73,8 +71,8 @@ TEST(SlugWrapperTest, SerializesDeserializes)
   }
 
   // check whether old and new object are equal (does NOT compare cumulative yields)
-  auto oldData = (SlugOb.cluster)->make_tuple();
-  auto newData = (new_SlugOb.cluster)->make_tuple();
+  auto oldData = SlugOb.cluster.make_tuple();
+  auto newData = new_SlugOb.cluster.make_tuple();
 
   for_each2(oldData, newData, [](auto index, auto &&oldDataElem, auto &&newDataElem) {
     EXPECT_EQ(oldDataElem, newDataElem) << "Tuple elements at index "

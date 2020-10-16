@@ -9,8 +9,7 @@ static void SlugSerializeDeserialize(benchmark::State& state)
   constexpr double particle_mass = 5.0e3; // solar masses
   constexpr double dt = 1.0e6;            // years
   double t = 0.;                          // years
-  slugWrapper SlugOb;
-  SlugOb.constructCluster(particle_mass);
+  slugWrapper SlugOb(particle_mass);
 
   // advance in time
   constexpr int max_timesteps = 10;
@@ -31,8 +30,7 @@ static void SlugSerializeDeserialize(benchmark::State& state)
     SlugOb.serializeCluster(state);
 
     // deserialize
-    slugWrapper new_SlugOb;
-    new_SlugOb.reconstructCluster(state);
+    slugWrapper new_SlugOb(state);
 
     numSerializations += 1.;
   }
