@@ -56,21 +56,18 @@ TEST(SlugWrapperTest, SerializesDeserializes)
   EXPECT_EQ(SlugOb.getNumberAliveStochasticStars(), new_SlugOb.getNumberAliveStochasticStars());
 
   // check ejecta mass this timestep
-  constexpr double abs_err_tol = 1.0e-13;
-  EXPECT_NEAR(SlugOb.getEjectaMassThisTimestep(), new_SlugOb.getEjectaMassThisTimestep(), abs_err_tol);
+  constexpr double abs_err_tol_mass = 1.0e-13;
+  EXPECT_NEAR(SlugOb.getEjectaMassThisTimestep(),
+              new_SlugOb.getEjectaMassThisTimestep(), abs_err_tol_mass);
 
   // check ionizing photon luminosity (again, after a new timestep)
   EXPECT_DOUBLE_EQ(SlugOb.getPhotometryQH0(), new_SlugOb.getPhotometryQH0());
 
-  // check yields this timestep (to machine precision)
+  // check yields this timestep
   for(size_t i = 0; i < yields_last_timestep_new.size(); ++i) {
-    constexpr double rel_err_tol = 1.0e-13;
-    double mean_y = 0.5*(yields_last_timestep_old[i] + yields_last_timestep_new[i]);
-    double abs_error_bound = mean_y * rel_err_tol;
-
-    EXPECT_NEAR(yields_last_timestep_old[i], yields_last_timestep_new[i], abs_error_bound)
-      << "Element " << i << " differs by fractional amount "
-      << std::abs((yields_last_timestep_old[i] - yields_last_timestep_new[i]) / mean_y);
+    EXPECT_NEAR(yields_last_timestep_old[i], yields_last_timestep_new[i], abs_err_tol_mass)
+      << "Element " << i << " differs by amount "
+      << std::abs(yields_last_timestep_old[i] - yields_last_timestep_new[i]);
   }
 
   // check whether old and new object are equal (does NOT compare *cumulative* yields)
