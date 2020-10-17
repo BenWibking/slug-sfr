@@ -18,38 +18,28 @@ TEST(SlugWrapperTest, SerializesDeserializes)
   {
     t += dt;
     SlugOb.advanceToTime(t);
+    auto yields = SlugOb.getYieldsThisTimestep();
   }
   std::cout << "Advanced star cluster to time t = " << t << " years." << std::endl;
 
   // serialize
   // NOTE: yields never need to be serialized!
-  //       we only ever care about the incremental yield at a given timestep!!
-  //       We assume that the user will *always* call get_yield() after calling advance().
+  //       we only ever care about the incremental yield at a given timestep!
 
   slug_cluster_state_noyields state;
   SlugOb.serializeCluster(state);
 
 #if defined(PRINT_SIZE)
-  // print size of struct (in bytes)
+  // print size of struct (in bytes) [should be 224 bytes]
   std::cout << "slug_cluster_state_noyields is " << sizeof(state) << " bytes." << std::endl;
 #endif
 
-// SLUG structs
-// slug_cluster_state_noyields is 224 bytes.
-//
-// GIZMO structs
-// Size of particle structure     352  [bytes]
-// Size of hydro-cell structure   640  [bytes]
-// 
-// For low-res AGORA:
-// 81.5839 MByte for particle storage.
-// 143.051 MByte for storage of hydro data.
-//
-// Therefore, 23.1% increase in memory usage if slug_cluster_state_noyields
-// is added to particle_data (neglecting alignment padding, which causes additional overhead)
-
   // deserialize
   slugWrapper new_SlugOb(state);
+
+  // check ionizing photon luminosity
+  // we have to check this prior to calling advanceToTime, since it models a use case in GIZMO
+  EXPECT_DOUBLE_EQ(SlugOb.getPhotometryQH0(), new_SlugOb.getPhotometryQH0());
 
   // advance both old and new objects by one additional timestep dt
   const double final_t = t + dt;
@@ -59,17 +49,31 @@ TEST(SlugWrapperTest, SerializesDeserializes)
   new_SlugOb.advanceToTime(final_t);
   auto yields_last_timestep_new = new_SlugOb.getYieldsThisTimestep();
 
-  // check whether incremental yields are equal to machine precision
+  // check number of SNe this timestep
+  EXPECT_EQ(SlugOb.getNumberSNeThisTimestep(), new_SlugOb.getNumberSNeThisTimestep());
+
+  // check number of non-dead stars this timestep
+  EXPECT_EQ(SlugOb.getNumberAliveStochasticStars(), new_SlugOb.getNumberAliveStochasticStars());
+
+  // check ejecta mass this timestep
+  constexpr double abs_err_tol = 1.0e-13;
+  EXPECT_NEAR(SlugOb.getEjectaMassThisTimestep(), new_SlugOb.getEjectaMassThisTimestep(), abs_err_tol);
+
+  // check ionizing photon luminosity (again, after a new timestep)
+  EXPECT_DOUBLE_EQ(SlugOb.getPhotometryQH0(), new_SlugOb.getPhotometryQH0());
+
+  // check yields this timestep (to machine precision)
   for(size_t i = 0; i < yields_last_timestep_new.size(); ++i) {
+    constexpr double rel_err_tol = 1.0e-13;
     double mean_y = 0.5*(yields_last_timestep_old[i] + yields_last_timestep_new[i]);
-    double abs_error_bound = mean_y * 1.0e-13;
+    double abs_error_bound = mean_y * rel_err_tol;
 
     EXPECT_NEAR(yields_last_timestep_old[i], yields_last_timestep_new[i], abs_error_bound)
       << "Element " << i << " differs by fractional amount "
       << std::abs((yields_last_timestep_old[i] - yields_last_timestep_new[i]) / mean_y);
   }
 
-  // check whether old and new object are equal (does NOT compare cumulative yields)
+  // check whether old and new object are equal (does NOT compare *cumulative* yields)
   auto oldData = SlugOb.cluster.make_tuple();
   auto newData = new_SlugOb.cluster.make_tuple();
 

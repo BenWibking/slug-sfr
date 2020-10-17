@@ -38,12 +38,13 @@ auto slugWrapper::getYieldsThisTimestep() -> std::vector<double>
 auto slugWrapper::getEjectaMassThisTimestep() -> double
 {
   double ejectaMass = 0.;
+  // we sum the yields of all elements to compute the total ejecta mass
   for (size_t i = 0; i < yieldsThisTimestep.size(); ++i)
   {
     ejectaMass += yieldsThisTimestep[i];
   }
 
-  return ejectaMass;
+  return ejectaMass; // solar masses
 }
 
 auto slugWrapper::getNumberAliveStochasticStars() -> int
