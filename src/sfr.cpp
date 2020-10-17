@@ -5,6 +5,9 @@
 
 TEST(SlugWrapperTest, SerializesDeserializes)
 {
+  // NOTE: currently this has only been tested for stochastic-only SLUG clusters
+  //       (i.e., where do_stochastic_only = True [slug_wrapper.h]).
+
   // create slug_cluster object
   constexpr double particle_mass = 5.0e3; // solar masses
   constexpr double dt = 1.0e6;            // years
