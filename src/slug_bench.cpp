@@ -1,29 +1,9 @@
 #include <benchmark/benchmark.h>
 #include "sfr.h"
 
-static void SlugSerializeDeserialize(benchmark::State& state)
+__attribute__((noinline))
+double SlugBenchmarkLoop(benchmark::State& state, slugWrapper& SlugOb)
 {
-  // setup
-
-  // create slug_cluster object
-  constexpr double particle_mass = 5.0e3; // solar masses
-  constexpr double dt = 1.0e6;            // years
-  double t = 0.;                          // years
-  slugWrapper SlugOb;
-  SlugOb.constructCluster(particle_mass);
-
-  // advance in time
-  constexpr int max_timesteps = 10;
-  std::vector<double> yields(NISO_SUKHBOLD16, 0.0);
-  for (int i = 0; i < max_timesteps; ++i)
-  {
-    t += dt;
-    const std::vector<double> delta_yields = SlugOb.advanceToTime(t);
-    for(size_t i = 0; i < delta_yields.size(); ++i) {
-      yields[i] += delta_yields[i];
-    }
-  }
-
   // benchmark
   double numSerializations = 0;
   for (auto _ : state) {
@@ -35,11 +15,32 @@ static void SlugSerializeDeserialize(benchmark::State& state)
     SlugOb.serializeCluster(state);
 
     // deserialize
-    slugWrapper new_SlugOb;
-    new_SlugOb.reconstructCluster(state);
+    slugWrapper new_SlugOb(state);
 
     numSerializations += 1.;
   }
+  return numSerializations;
+}
+
+static void SlugSerializeDeserialize(benchmark::State& state)
+{
+  // setup
+
+  // create slug_cluster object
+  constexpr double particle_mass = 5.0e3; // solar masses
+  constexpr double dt = 1.0e6;            // years
+  double t = 0.;                          // years
+  slugWrapper SlugOb(particle_mass);
+
+  // advance in time
+  constexpr int max_timesteps = 30;
+  for (int i = 0; i < max_timesteps; ++i)
+  {
+    t += dt;
+    SlugOb.advanceToTime(t);
+  }
+
+  auto numSerializations = SlugBenchmarkLoop(state, SlugOb);
 
   state.counters["SerializeDeserializeRate"] = benchmark::Counter(numSerializations, benchmark::Counter::kIsRate);
 }
