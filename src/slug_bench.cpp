@@ -25,6 +25,8 @@ double SlugBenchmarkLoop(benchmark::State& state, slugWrapper& SlugOb)
 static void SlugSerializeDeserialize(benchmark::State& state)
 {
   // setup
+  rng_type my_rng(42);
+  slugWrapper::slug_globals = new slug_predefined(&my_rng);
 
   // create slug_cluster object
   constexpr double particle_mass = 5.0e3; // solar masses

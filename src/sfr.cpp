@@ -8,6 +8,10 @@ TEST(SlugWrapperTest, SerializesDeserializes)
   // NOTE: currently this has only been tested for stochastic-only SLUG clusters
   //       (i.e., where do_stochastic_only = True [slug_wrapper.h]).
 
+  // initialize slug_globals
+  rng_type my_rng(42);
+  slugWrapper::slug_globals = new slug_predefined(&my_rng);
+
   // create slug_cluster object
   constexpr double particle_mass = 5.0e3; // solar masses
   constexpr double dt = 1.0e6;            // years
