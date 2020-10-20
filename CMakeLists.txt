@@ -51,7 +51,7 @@ blt_register_library(NAME slug
 
 blt_register_library(NAME pcg
   TREAT_INCLUDES_AS_SYSTEM OFF
-  INCLUDES ${source_dir}/pcg-cpp/include)
+  INCLUDES ${source_dir}/src/pcg-cpp)
 
 # include source code
 
